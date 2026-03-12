@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Abrazo del Padre - Confesión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
+
+        :root {
+            --primary: #D4AF37; /* Gold */
+            --bg-color: #FAFAFA;
+            --text-dark: #2D3748;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .serif-text {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Barra de Scroll Creativa */
+        ::-webkit-scrollbar {
+            width: 14px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-left: 1px solid #e5e7eb;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #FCD34D 0%, #D4AF37 100%);
+            border-radius: 10px;
+            border: 3px solid #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #FBBF24 0%, #B48E2D 100%);
+        }
+
+        /* Animación de la Puerta / Metáfora Visual */
+        .door-scene {
+            perspective: 800px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 300px;
+            position: relative;
+        }
+        .door-frame {
+            width: 160px;
+            height: 250px;
+            border: 8px solid #4A5568;
+            border-bottom: none;
+            position: relative;
+            background: radial-gradient(circle at 50% 100%, #FFFBEB 0%, #FEF3C7 40%, transparent 80%);
+            box-shadow: inset 0 0 50px rgba(252, 211, 77, 0.8), 0 0 100px rgba(252, 211, 77, 0.5);
+            border-radius: 80px 80px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .door {
+            width: 100%;
+            height: 100%;
+            background: #2D3748;
+            transform-origin: left;
+            transition: transform 2s ease-in-out;
+            border-radius: 72px 72px 0 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: inset -5px 0 15px rgba(0,0,0,0.5);
+        }
+        .door-scene:hover .door, .door-open .door {
+            transform: rotateY(-105deg);
+        }
+        .light-ray {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(255, 236, 179, 0.8), transparent);
+            clip-path: polygon(25% 100%, 75% 100%, 100% 0, 0 0);
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .door-scene:hover .light-ray, .door-open .light-ray {
+            opacity: 1;
+        }
+
+        /* 3D Emojis Shadows */
+        .emoji-3d {
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        .emoji-3d:hover {
+            transform: scale(1.1) translateY(-5px);
+        }
+
+        /* Efecto de Quema (WOW) */
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .sin-item {
+            transition: all 1.5s ease-in-out;
+        }
+        .burning {
+            filter: blur(4px) contrast(2);
+            opacity: 0;
+            transform: translateY(-20px) scale(0.9);
+        }
+
+        /* Glassmorphism cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        }
+        
+        /* Floating animation for icons */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="antialiased relative">
+
+    <!-- Fondo sutil con cruces y destellos -->
+    <div class="fixed inset-0 z-[-1] opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#D4AF37 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <!-- HEADER / METÁFORA VISUAL -->
+    <header class="min-h-screen flex flex-col items-center justify-center text-center px-4 relative overflow-hidden bg-gradient-to-b from-blue-50 to-white">
+        
+        <!-- Animación de Puerta -->
+        <div class="door-scene door-open mb-8" id="main-door">
+            <div class="light-ray"></div>
+            <div class="door-frame">
+                <!-- Símbolo interno (Cruz/Luz) -->
+                <div class="absolute bottom-10 text-amber-500 opacity-80 text-5xl floating">
+                    <i class="fa-solid fa-cross"></i>
+                </div>
+                <div class="door flex items-center justify-end pr-3">
+                    <div class="w-4 h-4 rounded-full bg-amber-400 shadow-[0_0_10px_#FBBF24]"></div>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="text-5xl md:text-7xl font-bold text-gray-800 mb-4 tracking-tight">
+            El Abrazo <span class="text-amber-500">del Padre</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-600 max-w-2xl mb-10 leading-relaxed">
+            No tengas miedo. El confesionario no es un tribunal de condena, es la puerta abierta a la misericordia y a la paz. 🕊️✨
+        </p>
+
+        <a href="#guia" class="px-8 py-4 bg-gray-900 text-white rounded-full font-semibold text-lg hover:bg-amber-500 hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 flex items-center gap-3 group">
+            Preparar mi corazón
+            <i class="fa-solid fa-arrow-down group-hover:translate-y-1 transition-transform"></i>
+        </a>
+    </header>
+
+    <!-- SECCIÓN: SIMULADOR / GUÍA (EL SCRIPT) -->
+    <section id="guia" class="py-20 px-4 max-w-5xl mx-auto">
+        <div class="text-center mb-16">
+            <span class="text-5xl emoji-3d mb-4">📱</span>
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Tu Guía para el Confesionario</h2>
+            <p class="text-gray-600 text-lg">Lleva este guion contigo en tu celular. Sigue los pasos y deja que el Espíritu Santo hable por ti.</p>
+        </div>
+
+        <div class="relative border-l-4 border-amber-300 ml-4 md:ml-10 space-y-12 pb-10">
+            
+            <!-- Paso 1 -->
+            <div class="relative pl-8 md:pl-12">
+                <div class="absolute -left-[26px] top-0 w-12 h-12 bg-white border-4 border-amber-400 rounded-full flex items-center justify-center text-2xl shadow-lg emoji-3d">
+                    🚪
+                </div>
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">1. El Saludo</h3>
+                    <p class="text-gray-600 mb-4">Al entrar o arrodillarte, haz la señal de la cruz. El sacerdote te recibirá.</p>
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <p class="font-semibold text-blue-900">Tú dices:</p>
+                        <p class="text-lg italic text-blue-800">"Ave María Purísima."</p>
+                        <p class="font-semibold text-gray-700 mt-3">El Padre responde:</p>
+                        <p class="text-md italic text-gray-600">"Sin pecado concebida."</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 2 -->
+            <div class="relative pl-8 md:pl-12">
+                <div class="absolute -left-[26px] top-0 w-12 h-12 bg-white border-4 border-amber-400 rounded-full flex items-center justify-center text-2xl shadow-lg emoji-3d">
+                    ⏳
+                </div>
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">2. El Tiempo</h3>
+                    <p class="text-gray-600 mb-4">Indica cuánto hace que no te confiesas (no importa si es mucho, hay fiesta en el cielo).</p>
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <p class="font-semibold text-blue-900">Tú dices:</p>
+                        <p class="text-lg italic text-blue-800">"Padre, hace [X tiempo] que no me confieso. Por la gracia de Dios, mis pecados son..."</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 3 -->
+            <div class="relative pl-8 md:pl-12">
+                <div class="absolute -left-[26px] top-0 w-12 h-12 bg-white border-4 border-amber-400 rounded-full flex items-center justify-center text-2xl shadow-lg emoji-3d">
+                    🗣️
+                </div>
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">3. Las Faltas</h3>
+                    <p class="text-gray-600">Menciona tus pecados con humildad, de forma clara y concisa. No necesitas dar detalles innecesarios. <a href="#quema" class="text-amber-600 font-semibold underline decoration-2 decoration-amber-300">Usa la herramienta de abajo para prepararlos.</a></p>
+                </div>
+            </div>
+
+            <!-- Paso 4 MEJORADO -->
+            <div class="relative pl-8 md:pl-12">
+                <div class="absolute -left-[26px] top-0 w-12 h-12 bg-white border-4 border-amber-400 rounded-full flex items-center justify-center text-2xl shadow-lg emoji-3d">
+                    ❤️‍🩹
+                </div>
+                <div class="glass-card p-6 rounded-2xl border-2 border-amber-200">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">4. Consejo, Penitencia y Contrición</h3>
+                    <p class="text-gray-600 mb-4">Escucha atentamente el <strong>consejo que el sacerdote te da</strong> para no volver a caer en el pecado. Él también te asignará una penitencia, que puede ser una oración o un acto de misericordia para reparar el daño. Finalmente, te pedirá que expreses tu arrepentimiento.</p>
+                    <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-5 rounded-xl border border-amber-200 shadow-inner">
+                        <p class="font-semibold text-amber-900 mb-2">Léelo con el corazón:</p>
+                        <p class="text-lg serif-text text-amber-950 leading-relaxed font-semibold">
+                            "Jesús, mi Señor y Redentor, yo me arrepiento de todos los pecados que he cometido hasta hoy y me pesa de todo corazón, porque con ellos he ofendido a un Dios tan bueno.<br><br>
+                            Propongo firmemente no volver a pecar y confío que por tu infinita misericordia me has de conceder el perdón de mis culpas y me has de llevar a la vida eterna. Amén."
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 5 -->
+            <div class="relative pl-8 md:pl-12">
+                <div class="absolute -left-[26px] top-0 w-12 h-12 bg-white border-4 border-amber-400 rounded-full flex items-center justify-center text-2xl shadow-lg emoji-3d">
+                    ✨
+                </div>
+                <div class="glass-card p-6 rounded-2xl bg-gray-900 text-white">
+                    <h3 class="text-2xl font-bold text-white mb-2">5. La Absolución</h3>
+                    <p class="text-gray-300 mb-4">El momento más hermoso. El padre trazará la señal de la cruz sobre ti y te perdonará en nombre de Dios.</p>
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                        <p class="text-lg italic text-amber-400 serif-text">"...Yo te absuelvo de tus pecados, en el nombre del Padre, y del Hijo, y del Espíritu Santo."</p>
+                        <p class="font-semibold text-white mt-3">Tú respondes con alegría:</p>
+                        <p class="text-xl font-bold text-white">"¡Amén!"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 6 NUEVO -->
+            <div class="relative pl-8 md:pl-12">
+                <div class="absolute -left-[26px] top-0 w-12 h-12 bg-white border-4 border-amber-400 rounded-full flex items-center justify-center text-2xl shadow-lg emoji-3d">
+                    🛐
+                </div>
+                <div class="glass-card p-6 rounded-2xl border-2 border-amber-100 bg-gradient-to-br from-white to-amber-50">
+                    <h3 class="text-2xl font-bold text-amber-900 mb-2">6. Ante Jesús Eucaristía</h3>
+                    <p class="text-gray-700 mb-4">Después de salir del confesionario, dirígete al Sagrario o a la capilla de adoración. Es el momento perfecto para <strong>cumplir la penitencia</strong> que te asignó el sacerdote.</p>
+                    <div class="bg-white/70 p-4 rounded-xl border border-amber-200/60 shadow-sm">
+                        <p class="text-lg italic text-amber-800 serif-text text-center">
+                            Da gracias a Jesús Eucaristía por su infinita misericordia y pídele las fuerzas necesarias para mantener tu corazón limpio y firme en su amor.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: LA QUEMA SIMBÓLICA (EFECTO WOW) -->
+    <section id="quema" class="py-20 bg-gray-900 text-white relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-4 relative z-10">
+            <div class="text-center mb-10">
+                <span class="text-6xl emoji-3d mb-4 block">🔥</span>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 serif-text">Entrega tus Cargas</h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Escribe aquí aquello que pesa en tu corazón. Esta lista es <strong class="text-white">100% privada</strong> y no se guarda en ningún lado. Una vez preparado, ofrécelo a la misericordia de Dios.
+                </p>
+            </div>
+
+            <div class="bg-gray-800 rounded-3xl p-6 md:p-10 shadow-2xl relative" id="sin-container-wrapper">
+                
+                <!-- Input Area -->
+                <div class="flex gap-3 mb-8" id="input-area">
+                    <input type="text" id="sin-input" placeholder="Escribe aquí y presiona Enter..." 
+                        class="flex-1 bg-gray-700 border border-gray-600 text-white rounded-xl px-5 py-4 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/50 transition-all text-lg"
+                        onkeypress="handleKeyPress(event)">
+                    <button onclick="addSin()" class="bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold px-6 py-4 rounded-xl transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                        <i class="fa-solid fa-plus text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Lista de Faltas -->
+                <div class="relative min-h-[150px]">
+                    <ul id="sin-list" class="space-y-3 relative z-10">
+                        <!-- Items will be added here via JS -->
+                    </ul>
+                    <!-- Canvas para partículas -->
+                    <div id="canvas-container"></div>
+                </div>
+
+                <!-- Botón de Quema -->
+                <div class="mt-10 text-center">
+                    <button id="burn-btn" onclick="burnSins()" class="hidden relative overflow-hidden group bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold text-xl px-10 py-5 rounded-full hover:scale-105 transition-all shadow-[0_0_30px_rgba(239,68,68,0.4)]">
+                        <span class="relative z-10 flex items-center gap-3">
+                            <i class="fa-solid fa-fire"></i> Entregar al Señor
+                        </span>
+                        <div class="absolute inset-0 h-full w-full bg-gradient-to-r from-orange-500 to-amber-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                    </button>
+                </div>
+
+                <!-- Mensaje de Paz (Oculto al inicio) -->
+                <div id="peace-message" class="hidden absolute inset-0 bg-gray-800 flex flex-col items-center justify-center rounded-3xl p-8 text-center z-20">
+                    <span class="text-7xl emoji-3d mb-6 floating">🕊️</span>
+                    <h3 class="text-4xl serif-text font-bold text-amber-400 mb-4">Tus faltas han sido borradas</h3>
+                    <p class="text-xl text-gray-300">
+                        "Como dista el oriente del occidente, así aleja de nosotros nuestras transgresiones." <br>
+                        <span class="text-sm text-gray-500 mt-2 block">(Salmo 103:12)</span>
+                    </p>
+                    <button onclick="resetSins()" class="mt-8 px-6 py-3 border-2 border-gray-600 text-gray-300 rounded-full hover:bg-gray-700 transition-colors">
+                        Volver
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: ACCIÓN (BÚSQUEDA DE IGLESIA) -->
+    <section class="py-24 bg-white text-center px-4 relative">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-amber-300 to-transparent"></div>
+        
+        <span class="text-6xl emoji-3d mb-6 block">⛪</span>
+        <h2 class="text-4xl font-bold text-gray-800 mb-6">Es momento de ir al Sacramento</h2>
+        <p class="text-gray-600 text-lg max-w-xl mx-auto mb-10">
+            Ya estás preparado. Toma tu celular, ve a la parroquia más cercana y experimenta el abrazo físico y espiritual de la reconciliación.
+        </p>
+
+        <a href="https://www.google.com/maps/search/Iglesia+Católica+cerca+de+mi/" target="_blank" class="inline-flex items-center gap-4 bg-blue-600 text-white text-xl font-bold px-10 py-5 rounded-full hover:bg-blue-700 hover:shadow-2xl hover:shadow-blue-500/40 transition-all hover:-translate-y-1">
+            <i class="fa-solid fa-map-location-dot text-2xl"></i>
+            Encontrar Iglesia Cercana
+        </a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-100 py-8 text-center text-gray-500">
+        <p>Hecho con fe y amor. 🙏 Todos los datos son locales y desaparecen al cerrar la página.</p>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        // Animación de la puerta al cargar
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('main-door').classList.add('door-open');
+            }, 500);
+        };
+
+        // Lógica de Lista de Faltas
+        const sinInput = document.getElementById('sin-input');
+        const sinList = document.getElementById('sin-list');
+        const burnBtn = document.getElementById('burn-btn');
+        let sins = [];
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                addSin();
+            }
+        }
+
+        function addSin() {
+            const text = sinInput.value.trim();
+            if (text === '') return;
+
+            sins.push(text);
+            sinInput.value = '';
+            renderSins();
+        }
+
+        function removeSin(index) {
+            sins.splice(index, 1);
+            renderSins();
+        }
+
+        function renderSins() {
+            sinList.innerHTML = '';
+            
+            if (sins.length > 0) {
+                burnBtn.classList.remove('hidden');
+                burnBtn.classList.add('inline-block');
+            } else {
+                burnBtn.classList.add('hidden');
+                burnBtn.classList.remove('inline-block');
+            }
+
+            sins.forEach((sin, index) => {
+                const li = document.createElement('li');
+                li.className = 'sin-item bg-gray-700 text-gray-200 px-5 py-4 rounded-xl flex justify-between items-center border-l-4 border-gray-500';
+                li.innerHTML = `
+                    <span class="text-lg font-medium">${sin}</span>
+                    <button onclick="removeSin(${index})" class="text-gray-400 hover:text-red-400 transition-colors p-2">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+                sinList.appendChild(li);
+            });
+        }
+
+        function resetSins() {
+            sins = [];
+            renderSins();
+            document.getElementById('peace-message').classList.add('hidden');
+            document.getElementById('input-area').style.opacity = '1';
+            document.getElementById('input-area').style.pointerEvents = 'auto';
+            const canvasContainer = document.getElementById('canvas-container');
+            canvasContainer.innerHTML = ''; // Clear canvas
+        }
+
+        // --- SISTEMA DE PARTÍCULAS (EFECTO WOW) ---
+        function burnSins() {
+            // Ocultar input y botón
+            document.getElementById('input-area').style.opacity = '0';
+            document.getElementById('input-area').style.pointerEvents = 'none';
+            burnBtn.classList.add('hidden');
+            burnBtn.classList.remove('inline-block');
+
+            const container = document.getElementById('canvas-container');
+            const wrapper = document.getElementById('sin-container-wrapper');
+            
+            // Configurar Canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = wrapper.clientWidth;
+            canvas.height = wrapper.clientHeight;
+            container.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+
+            const items = document.querySelectorAll('.sin-item');
+            const particles = [];
+
+            // Añadir clase para CSS blur/fade out a los items
+            items.forEach((item, index) => {
+                // Retraso escalonado para que se quemen uno por uno o juntos
+                setTimeout(() => {
+                    item.classList.add('burning');
+                    
+                    // Generar partículas desde la posición del item
+                    const rect = item.getBoundingClientRect();
+                    const wrapperRect = wrapper.getBoundingClientRect();
+                    
+                    const itemX = rect.left - wrapperRect.left;
+                    const itemY = rect.top - wrapperRect.top;
+
+                    for(let i=0; i<40; i++) {
+                        particles.push({
+                            x: itemX + Math.random() * rect.width,
+                            y: itemY + Math.random() * rect.height,
+                            vx: (Math.random() - 0.5) * 2,
+                            vy: -Math.random() * 4 - 1,
+                            life: 1,
+                            size: Math.random() * 8 + 3,
+                            color: Math.random() > 0.5 ? '#f97316' : (Math.random() > 0.5 ? '#ef4444' : '#6b7280') // Naranja, Rojo, Gris
+                        });
+                    }
+                }, index * 200); // 200ms entre cada item
+            });
+
+            // Loop de animación del Canvas
+            let animationFrame;
+            let active = true;
+
+            function animate() {
+                if(!active) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                let particlesAlive = false;
+
+                particles.forEach(p => {
+                    if (p.life > 0) {
+                        particlesAlive = true;
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.life -= 0.015; // Velocidad de desvanecimiento
+                        p.size *= 0.98; // Se encogen
+                        
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fillStyle = p.color;
+                        ctx.globalAlpha = Math.max(0, p.life);
+                        ctx.fill();
+                    }
+                });
+
+                if (particlesAlive || particles.length < (items.length * 40)) {
+                    animationFrame = requestAnimationFrame(animate);
+                } else {
+                    // Animación terminada
+                    active = false;
+                    setTimeout(showPeaceMessage, 500);
+                }
+            }
+            
+            animate();
+        }
+
+        function showPeaceMessage() {
+            const msg = document.getElementById('peace-message');
+            msg.classList.remove('hidden');
+            msg.style.opacity = '0';
+            
+            // Fade in effect
+            setTimeout(() => {
+                msg.style.transition = 'opacity 1s ease';
+                msg.style.opacity = '1';
+                sinList.innerHTML = ''; // Limpiar DOM
+            }, 50);
+        }
+    </script>
+</body>
+</html>
+```
